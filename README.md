@@ -14,6 +14,10 @@ Notebooks from learning LangGraph, from a basic workflow to LLM-powered chains.
 | `5_parallel_workflow2.ipynb` | Parallel LLM workflow. Three nodes evaluate an essay (language, analysis, clarity) at the same time using structured output (`EvaluationSchema`), then a final node writes overall feedback and the average score. |
 | `6_conditional_workflow1.ipynb` | Simple conditional workflow. A routing function sends a number to `even_node` or `odd_node`. |
 | `7_conditional_workflow2.ipynb` | Data engineering conditional workflow. Profiles a batch's null percentage, then routes it to load, clean then load, or quarantine and alert. |
+| `8_iterative_workflow.ipynb` | Iterative (loop) workflow. A generator writes a tweet, an evaluator (structured output, `approved` or `needs_improvement`) judges it, and an optimizer rewrites it until approved or `max_iteration` is reached. Keeps `tweet_history` and `feedback_history` with `operator.add` reducers. |
+| `9_basic_chatbot.ipynb` | Basic chatbot. Conversation history lives in `messages` (using the `add_messages` reducer), and a `MemorySaver` checkpointer with a `thread_id` gives each chat its own memory. Includes a terminal chat loop. |
+| `10_persistent_chatbot1.ipynb` | Persistent chatbot. Swaps `MemorySaver` for a database-backed `SqliteSaver`, so conversations survive a restart. Shows per-user `thread_id`s, reading stored history, listing threads, and moving to `PostgresSaver` for production. |
+| `10_persistent_chatbot2.ipynb` | Checkpointer demo with the joke and explanation workflow (`generate_joke -> generate_explanation`) compiled with `InMemorySaver` and run under a `thread_id`. Uses `.text` instead of `.content` so thinking blocks don't end up in the state. |
 
 ## Concepts covered
 - State as a `TypedDict`
@@ -26,8 +30,12 @@ Notebooks from learning LangGraph, from a basic workflow to LLM-powered chains.
 - Reducers (`Annotated` keys) for combining results from parallel nodes
 - Structured output with Pydantic (`with_structured_output`)
 - Conditional routing with `add_conditional_edges`
+- Loops: routing back to an earlier node until a condition is met
+- Chat state with the `add_messages` reducer
+- Checkpointers (`MemorySaver`, `InMemorySaver`, `SqliteSaver`) and `thread_id` for persistent memory
+- Using `response.text` instead of `response.content` to get plain text from Claude models that return content blocks
 
 ## Setup
 1. Create and activate a virtual environment.
-2. Install: `pip install langgraph langchain-anthropic python-dotenv`
+2. Install: `pip install langgraph langchain-anthropic python-dotenv`. The SQLite chatbot (notebook 10_persistent_chatbot1) also needs `langgraph-checkpoint-sqlite`.
 3. Create a `.env` file with `ANTHROPIC_API_KEY=your_key`. It is git-ignored, so don't commit it.
